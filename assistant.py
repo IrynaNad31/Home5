@@ -1,3 +1,4 @@
+import pickle 
 from collections import UserDict
 from datetime import datetime, timedelta
 
@@ -86,6 +87,16 @@ class AddressBook(UserDict):
                     results.append(record)
                     break 
         return results
+    def save_to_file(self, filename):
+        with open(filename, 'wb') as file:
+            pickle.dump(self.data, file)
+
+    def load_from_file(self, filename):
+        try:
+            with open(filename, 'rb') as file:
+                self.data = pickle.load(file)
+        except FileNotFoundError:
+            pass
 
     def __iter__(self):
         return AddressBookIterator(self)
@@ -108,6 +119,7 @@ class AddressBookIterator:
 
 if __name__ == "__main__":
     address_book = AddressBook()
+    address_book.load_from_file('address_book_data.pkl')
 
     record1 = Record("John Doe", "1990-05-15")
     record1.add_phone("123-456-7890")
@@ -118,7 +130,6 @@ if __name__ == "__main__":
     record2.add_phone("555-123-4567")
     address_book.add_record(record2)
 
-    # Search for records
     search_results = address_book.search_by_name("John Doe")
     for result in search_results:
         print(result)
@@ -131,3 +142,10 @@ if __name__ == "__main__":
         days = record.days_to_birthday()
         if days is not None:
             print(f"{record.name}'s birthday is in {days} days")
+
+
+
+     address_book.save_to_file('address_book_data.pkl')
+
+
+
